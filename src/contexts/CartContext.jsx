@@ -1,3 +1,6 @@
+// Context sirve para compartir información entre diferentes componentes
+// sin tener que pasarla manualmente por props.
+
 import {
     createContext,
     useContext,
@@ -9,6 +12,7 @@ import {
 const CartContext = createContext();
 
 const CLAVE_CARRITO = "carrito";
+
 const IVA = 0.19;
 
 // Lee el carrito guardado en localStorage
@@ -22,7 +26,10 @@ function leerCarritoDesdeStorage() {
 }
 
 export function CartProvider({ children }) {
-    const [carrito, setCarrito] = useState(leerCarritoDesdeStorage);
+
+    const [carrito, setCarrito] = useState(
+        leerCarritoDesdeStorage
+    );
 
     // Guardar carrito en localStorage cada vez que cambie
     useEffect(() => {
@@ -34,13 +41,16 @@ export function CartProvider({ children }) {
 
     // Agregar producto al carrito
     const agregarAlCarrito = useCallback((personaje) => {
+
         setCarrito((prev) => {
+
             const yaExiste = prev.find(
                 (item) => item.id === personaje.id
             );
 
             // Si ya existe, aumentar cantidad
             if (yaExiste) {
+
                 return prev.map((item) =>
                     item.id === personaje.id
                         ? {
@@ -59,22 +69,29 @@ export function CartProvider({ children }) {
                     name: personaje.name,
                     image: personaje.img_url,
                     episodio: personaje.episodio || "No disponible",
+
+                    // Este precio YA incluye el IVA
                     precio: personaje.precio,
+
                     cantidad: 1,
                 },
             ];
         });
+
     }, []);
 
     // Eliminar completamente un producto
     const eliminarDelCarrito = useCallback((id) => {
+
         setCarrito((prev) =>
             prev.filter((item) => item.id !== id)
         );
+
     }, []);
 
     // Aumentar cantidad
     const aumentarCantidad = useCallback((id) => {
+
         setCarrito((prev) =>
             prev.map((item) =>
                 item.id === id
@@ -85,26 +102,32 @@ export function CartProvider({ children }) {
                     : item
             )
         );
+
     }, []);
 
     // Disminuir cantidad
-   const disminuirCantidad = useCallback((id) => {
-    setCarrito((prev) =>
-        prev.map((item) =>
-            item.id === id && item.cantidad > 1
-                ? {
-                    ...item,
-                    cantidad: item.cantidad - 1,
-                }
-                : item
-        )
-    );
-}, []);
+    const disminuirCantidad = useCallback((id) => {
+
+        setCarrito((prev) =>
+            prev.map((item) =>
+                item.id === id && item.cantidad > 1
+                    ? {
+                          ...item,
+                          cantidad: item.cantidad - 1,
+                      }
+                    : item
+            )
+        );
+
+    }, []);
+
     // Vaciar carrito
     const vaciarCarrito = useCallback(() => {
+
         setCarrito([]);
 
         localStorage.removeItem(CLAVE_CARRITO);
+
     }, []);
 
     // Cantidad total de productos
@@ -113,30 +136,29 @@ export function CartProvider({ children }) {
         0
     );
 
-    // Subtotal antes del IVA
-    const subtotal = carrito.reduce(
+    // Total de los productos
+    // El precio ya tiene el IVA incluido
+    const totalPagar = carrito.reduce(
         (acc, item) =>
             acc + item.precio * item.cantidad,
         0
     );
 
-    // IVA
-    const iva = subtotal * IVA;
+    // IVA incluido dentro del precio
+    const iva = totalPagar * IVA / (1 + IVA);
 
-    // Total a pagar
-    const totalPagar = subtotal + iva;
+    // Subtotal sin IVA
+    const subtotal = totalPagar - iva;
 
     return (
         <CartContext.Provider
             value={{
                 carrito,
-
                 agregarAlCarrito,
                 eliminarDelCarrito,
                 aumentarCantidad,
                 disminuirCantidad,
                 vaciarCarrito,
-
                 totalItems,
                 subtotal,
                 iva,
