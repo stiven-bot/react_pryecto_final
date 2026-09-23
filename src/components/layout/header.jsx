@@ -1,19 +1,27 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+
 import Navbar from "./navbar";
+
 import { UseTheme } from "../../contexts/ThemeContext";
+import { UseCart } from "../../contexts/CartContext";
+
 import {
     Sun,
     Moon,
     ShoppingCart,
     User,
 } from "lucide-react";
-import { UseCart } from "../../contexts/CartContext";
+
 import Login from "../Auth/login";
 import Swal from "sweetalert2";
+
+import tortuga from "../../assets/tortuga.jpg";
+
 import "./estilolayout.css";
 
 function Header() {
+
     const { tema, cambiarTema } = UseTheme();
     const { totalItems } = UseCart();
     const navigate = useNavigate();
@@ -32,6 +40,7 @@ function Header() {
     }
 
     async function cerrarSesion() {
+
         const resultado = await Swal.fire({
             title: "¿Cerrar sesión?",
             text: "¿Estás seguro de que deseas cerrar sesión?",
@@ -48,7 +57,6 @@ function Header() {
         }
 
         localStorage.removeItem("usuario");
-
         setUsuario(null);
         setMostrarPerfil(false);
 
@@ -72,7 +80,7 @@ function Header() {
                     className="bg-transparent border-none p-0"
                 >
                     <img
-                        src="/src/assets/tortuga.jpg"
+                        src={tortuga}
                         alt="logo de tortuga"
                         width={100}
                     />
@@ -178,9 +186,12 @@ function Header() {
 
                             </div>
                         )}
+
                     </div>
                 )}
+
             </div>
+
         </header>
     );
 }
