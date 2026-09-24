@@ -10,7 +10,6 @@ import {
     Sun,
     Moon,
     ShoppingCart,
-    User,
     Mail,
     Phone,
     MapPin,
