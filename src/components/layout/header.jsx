@@ -11,23 +11,31 @@ import {
     Moon,
     ShoppingCart,
     User,
+    Mail,
+    Phone,
+    MapPin,
+    Package,
+    LogOut,
+    X,
 } from "lucide-react";
 
 import Login from "../Auth/login";
 import Swal from "sweetalert2";
 
 import tortuga from "../../assets/tortuga.jpg";
+import perfil from "../../assets/perfil.png";
 
 import "./estilolayout.css";
 
 function Header() {
-
     const { tema, cambiarTema } = UseTheme();
     const { totalItems } = UseCart();
+
     const navigate = useNavigate();
 
     const [usuario, setUsuario] = useState(() => {
         const datos = localStorage.getItem("usuario");
+
         return datos ? JSON.parse(datos) : null;
     });
 
@@ -40,7 +48,6 @@ function Header() {
     }
 
     async function cerrarSesion() {
-
         const resultado = await Swal.fire({
             title: "¿Cerrar sesión?",
             text: "¿Estás seguro de que deseas cerrar sesión?",
@@ -57,6 +64,7 @@ function Header() {
         }
 
         localStorage.removeItem("usuario");
+
         setUsuario(null);
         setMostrarPerfil(false);
 
@@ -71,8 +79,8 @@ function Header() {
 
     return (
         <header className="bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 transition-colors duration-300">
-
-            {/* Logo */}
+            
+            {/* LOGO */}
             <div className="logo">
                 <button
                     type="button"
@@ -81,19 +89,17 @@ function Header() {
                 >
                     <img
                         src={tortuga}
-                        alt="logo de tortuga"
+                        alt="Logo de tortuga"
                         width={100}
                     />
                 </button>
             </div>
 
-            {/* Navegación */}
             <Navbar />
 
-            {/* Controles del Header */}
             <div className="login-container relative">
 
-                {/* Carrito */}
+                {/* CARRITO */}
                 <button
                     type="button"
                     onClick={() => navigate("/carrito")}
@@ -109,7 +115,7 @@ function Header() {
                     )}
                 </button>
 
-                {/* Tema */}
+                {/* MODO OSCURO */}
                 <button
                     type="button"
                     onClick={cambiarTema}
@@ -127,16 +133,14 @@ function Header() {
                     )}
                 </button>
 
-                {/* Login / Usuario */}
+                {/* LOGIN / PERFIL */}
                 {!usuario ? (
                     <>
                         {!mostrarLogin ? (
                             <button
                                 type="button"
                                 className="px-3 py-2 rounded-lg text-sm font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors"
-                                onClick={() =>
-                                    setMostrarLogin(true)
-                                }
+                                onClick={() => setMostrarLogin(true)}
                             >
                                 Login
                             </button>
@@ -152,46 +156,153 @@ function Header() {
                 ) : (
                     <div className="relative">
 
-                        {/* Usuario */}
+                        {/* BOTÓN PERFIL */}
                         <button
                             type="button"
                             onClick={() =>
                                 setMostrarPerfil(!mostrarPerfil)
                             }
-                            className="p-2 rounded-full hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors"
+                            className="p-1 rounded-full hover:ring-2 hover:ring-cyan-400 transition-all"
                             title="Ver perfil"
                         >
-                            <User size={22} />
+                            <img
+                                src={perfil}
+                                alt="Foto de perfil"
+                                className="w-10 h-10 rounded-full object-cover border-2 border-cyan-500"
+                            />
                         </button>
 
-                        {/* Perfil */}
+                        {/* TARJETA DEL PERFIL */}
                         {mostrarPerfil && (
-                            <div className="absolute right-0 mt-2 w-56 bg-white dark:bg-slate-800 rounded-xl shadow-xl ring-1 ring-slate-200 dark:ring-slate-700 p-4 z-50">
+                            <div className="absolute right-0 mt-2 w-72 bg-white dark:bg-slate-800 rounded-2xl shadow-2xl ring-1 ring-slate-200 dark:ring-slate-700 p-5 z-50">
 
-                                <p className="font-semibold text-slate-800 dark:text-slate-100">
-                                    {usuario.nombre}
-                                </p>
+                                {/* X CERRAR */}
+                                <div className="flex justify-end mb-1">
+                                    <button
+                                        type="button"
+                                        onClick={() =>
+                                            setMostrarPerfil(false)
+                                        }
+                                        className="w-9 h-9 flex items-center justify-center rounded-full text-slate-400 hover:text-white hover:bg-rose-500 transition-all"
+                                        title="Cerrar perfil"
+                                    >
+                                        <X size={20} />
+                                    </button>
+                                </div>
 
-                                <p className="text-sm text-slate-500 dark:text-slate-400 mb-4">
-                                    Usuario
-                                </p>
+                                {/* FOTO */}
+                                <div className="flex justify-center mb-3">
+                                    <img
+                                        src={perfil}
+                                        alt="Foto de perfil"
+                                        className="w-20 h-20 rounded-full object-cover border-4 border-cyan-500 shadow-lg"
+                                    />
+                                </div>
 
+                                {/* NOMBRE */}
+                                <div className="text-center mb-4">
+                                    <h2 className="text-lg font-bold text-slate-800 dark:text-white">
+                                        {usuario.nombre}
+                                    </h2>
+
+                                    <p className="text-sm text-cyan-500 font-medium">
+                                        {usuario.tipoUsuario}
+                                    </p>
+                                </div>
+
+                                {/* INFORMACIÓN */}
+                                <div className="space-y-3 border-t border-slate-200 dark:border-slate-700 pt-4">
+
+                                    {/* CORREO */}
+                                    <div className="flex items-center gap-3">
+                                        <Mail
+                                            size={18}
+                                            className="text-cyan-500"
+                                        />
+
+                                        <div>
+                                            <p className="text-xs text-slate-400">
+                                                Correo
+                                            </p>
+
+                                            <p className="text-sm text-slate-700 dark:text-slate-200 break-all">
+                                                {usuario.correo}
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                    {/* TELÉFONO */}
+                                    <div className="flex items-center gap-3">
+                                        <Phone
+                                            size={18}
+                                            className="text-cyan-500"
+                                        />
+
+                                        <div>
+                                            <p className="text-xs text-slate-400">
+                                                Teléfono
+                                            </p>
+
+                                            <p className="text-sm text-slate-700 dark:text-slate-200">
+                                                {usuario.telefono}
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                    {/* CIUDAD */}
+                                    <div className="flex items-center gap-3">
+                                        <MapPin
+                                            size={18}
+                                            className="text-cyan-500"
+                                        />
+
+                                        <div>
+                                            <p className="text-xs text-slate-400">
+                                                Ciudad
+                                            </p>
+
+                                            <p className="text-sm text-slate-700 dark:text-slate-200">
+                                                {usuario.ciudad}
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                    {/* CARRITO */}
+                                    <div className="flex items-center gap-3">
+                                        <Package
+                                            size={18}
+                                            className="text-cyan-500"
+                                        />
+
+                                        <div>
+                                            <p className="text-xs text-slate-400">
+                                                Carrito
+                                            </p>
+
+                                            <p className="text-sm text-slate-700 dark:text-slate-200">
+                                                {totalItems}{" "}
+                                                {totalItems === 1
+                                                    ? "producto"
+                                                    : "productos"}
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* CERRAR SESIÓN */}
                                 <button
                                     type="button"
                                     onClick={cerrarSesion}
-                                    className="w-full px-3 py-2 rounded-lg bg-rose-500 text-white hover:bg-rose-600 transition-colors"
+                                    className="w-full mt-5 flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-rose-500 text-white font-semibold hover:bg-rose-600 transition-colors"
                                 >
+                                    <LogOut size={18} />
                                     Cerrar sesión
                                 </button>
-
                             </div>
                         )}
-
                     </div>
                 )}
-
             </div>
-
         </header>
     );
 }
